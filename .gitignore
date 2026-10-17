@@ -1,0 +1,4 @@
+library
+library.exe
+*.o
+*.log

@@ -1,0 +1,8 @@
+.git
+Jenkinsfile
+k8s
+tests
+*.md
+library
+library.exe
+original_lib_console.cpp

@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Central Library</title>
+<style>
+:root{
+  --bg:#f6f3ec; --card:#fffdf8; --ink:#1f2a37; --muted:#6b7280; --line:#e4dfd3;
+  --brand:#1f4e5f; --brand-ink:#fff; --ok:#2f7d4f; --okbg:#e3f2e8; --warn:#b4531a; --warnbg:#fbe9dc; --bad:#b3261e; --badbg:#fbe4e2;
+  --shadow:0 1px 2px rgba(0,0,0,.06),0 6px 18px rgba(31,42,55,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#14181d; --card:#1c222a; --ink:#e8e6e1; --muted:#9aa3ad; --line:#2c343e; --brand:#6fb3c8; --brand-ink:#0f1a1f;
+  --ok:#6fcf97; --okbg:#173325; --warn:#f2a36b; --warnbg:#3a2616; --bad:#f28b82; --badbg:#3b1b19; --shadow:none;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Georgia,"Times New Roman",serif}
+h1,h2,h3,.sans,button,input,select,th,.pill,.tag{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+header{background:var(--brand);color:var(--brand-ink)}
+header .wrap{display:flex;align-items:center;gap:16px;height:64px}
+header h1{font-size:19px;margin:0;letter-spacing:.2px;font-weight:650}
+header .sp{flex:1}
+header .who{font:14px system-ui,sans-serif;opacity:.95}
+.btn{border:1px solid transparent;background:var(--brand);color:var(--brand-ink);padding:8px 14px;border-radius:8px;font-size:14px;cursor:pointer;font-weight:600}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border-color:currentColor;color:inherit}
+.btn.sm{padding:5px 11px;font-size:13px}
+.btn.ok{background:var(--ok);color:#fff}
+.btn.warn{background:var(--warn);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+/* login */
+#login{min-height:calc(100vh - 64px);display:grid;place-items:center;padding:24px 0}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:28px;width:min(440px,100%)}
+.panel h2{margin:0 0 4px;font-size:22px}
+.panel p{margin:0 0 18px;color:var(--muted)}
+label{display:block;font:600 13px system-ui,sans-serif;margin:12px 0 5px}
+input,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-size:15px}
+input:focus,select:focus{outline:2px solid var(--brand);outline-offset:1px}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.role{border:1.5px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;background:var(--bg);text-align:left;color:var(--ink)}
+.role b{display:block;font:650 15px system-ui,sans-serif}
+.role span{font:13px system-ui,sans-serif;color:var(--muted)}
+.role.on{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand) inset}
+/* app */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:22px 0 16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stat small{font:600 12px system-ui,sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.stat div{font:650 28px system-ui,sans-serif;margin-top:2px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.bar input{flex:2;min-width:200px}.bar select{flex:1;min-width:140px}
+.tablebox{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:auto;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);padding:11px 14px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card)}
+td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+td.t{font-weight:600}td.t small{display:block;font-weight:400;color:var(--muted)}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12.5px;font-weight:650}
+.pill.available{background:var(--okbg);color:var(--ok)}
+.pill.issued{background:var(--warnbg);color:var(--warn)}
+.pill.overdue{background:var(--badbg);color:var(--bad)}
+.tag{font-size:13px;color:var(--muted)}
+.timer{font:600 13px ui-monospace,Menlo,Consolas,monospace}
+.timer.late{color:var(--bad)}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+details.add{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:14px;padding:12px 16px}
+details.add summary{cursor:pointer;font:650 14px system-ui,sans-serif}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;align-items:end;margin-top:6px}
+#toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:9}
+.toast{background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:10px;font:14px system-ui,sans-serif;max-width:340px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.toast.bad{background:var(--bad);color:#fff}
+.toast.ok{background:var(--ok);color:#fff}
+footer{color:var(--muted);font:13px system-ui,sans-serif;text-align:center;padding:26px 0}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>📚 Central Library</h1><div class="sp"></div>
+  <span class="who hidden" id="who"></span>
+  <button class="btn ghost sm hidden" id="logout">Log out</button>
+</div></header>
+
+<main class="wrap">
+  <section id="login">
+    <form class="panel" id="loginForm">
+      <h2>Welcome</h2><p>Sign in to browse the catalog.</p>
+      <label>Sign in as</label>
+      <div class="roles">
+        <button type="button" class="role on" data-role="member"><b>Member</b><span>Search, issue, return</span></button>
+        <button type="button" class="role" data-role="librarian"><b>Librarian</b><span>Timelines &amp; add books</span></button>
+      </div>
+      <label for="name">Your name</label>
+      <input id="name" placeholder="e.g. Anadi Sharma" autocomplete="off" required>
+      <button class="btn" style="width:100%;margin-top:18px;padding:11px">Enter library</button>
+    </form>
+  </section>
+
+  <section id="app" class="hidden">
+    <div class="stats">
+      <div class="stat"><small>Total books</small><div id="sTotal">0</div></div>
+      <div class="stat"><small>Available</small><div id="sAvail">0</div></div>
+      <div class="stat"><small>Issued</small><div id="sIssued">0</div></div>
+      <div class="stat"><small>Overdue now</small><div id="sLate">0</div></div>
+    </div>
+
+    <details class="add hidden" id="addBox">
+      <summary>＋ Add a new book</summary>
+      <form class="grid3" id="addForm">
+        <div><label>Title</label><input id="aTitle" required></div>
+        <div><label>Author</label><input id="aAuthor"></div>
+        <div><label>Category</label><input id="aCat"></div>
+        <button class="btn">Add book</button>
+      </form>
+    </details>
+
+    <div class="bar">
+      <input id="q" placeholder="Search by title, author or category…" type="search">
+      <select id="fCat"><option value="">All categories</option></select>
+      <select id="fStatus"><option value="">Any status</option><option value="available">Available</option><option value="issued">Issued</option></select>
+    </div>
+
+    <div class="tablebox"><table>
+      <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Status</th><th>Timeline</th><th></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table><div class="empty hidden" id="empty">No books match your search.</div></div>
+  </section>
+</main>
+<footer>Demo mode: loans are due in <span id="loanS">30</span> seconds · fine Rs. 5 per second late · <span id="ver">version …</span></footer>
+<div id="toasts"></div>
+
+<script>
+let books=[], clockOffset=0, loanSeconds=30, role="member";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const nowSrv=()=>Math.floor(Date.now()/1000)+clockOffset;
+const hhmmss=t=>t?new Date(t*1000).toLocaleTimeString([], {hour12:false}):"—";
+
+function toast(msg,kind){const d=document.createElement('div');d.className='toast '+(kind||'');d.textContent=msg;$('toasts').appendChild(d);setTimeout(()=>d.remove(),4500)}
+
+async function api(path,method='GET'){
+  const r=await fetch(path,{method}); return r.json();
+}
+async function load(){
+  try{
+    const d=await api('/api/books');
+    books=d.books; loanSeconds=d.loanSeconds; clockOffset=d.now-Math.floor(Date.now()/1000);
+    $('loanS').textContent=loanSeconds;
+    fillCats(); render();
+  }catch(e){toast('Cannot reach the server. Is library.exe still running?','bad')}
+}
+function fillCats(){
+  const sel=$('fCat'), cur=sel.value;
+  const cats=[...new Set(books.map(b=>b.category))].sort();
+  sel.innerHTML='<option value="">All categories</option>'+cats.map(c=>`<option>${esc(c)}</option>`).join('');
+  sel.value=cats.includes(cur)?cur:'';
+}
+function isLate(b){return b.status==='issued'&&b.dueTime&&nowSrv()>b.dueTime}
+
+function render(){
+  const q=$('q').value.trim().toLowerCase(), c=$('fCat').value, s=$('fStatus').value;
+  const list=books.filter(b=>(!q||(b.title+' '+b.author+' '+b.category).toLowerCase().includes(q))&&(!c||b.category===c)&&(!s||b.status===s));
+  $('sTotal').textContent=books.length;
+  $('sAvail').textContent=books.filter(b=>b.status==='available').length;
+  $('sIssued').textContent=books.filter(b=>b.status==='issued').length;
+  $('sLate').textContent=books.filter(isLate).length;
+  $('empty').classList.toggle('hidden',list.length>0);
+  $('rows').innerHTML=list.map(b=>{
+    const late=isLate(b);
+    const pill=`<span class="pill ${late?'overdue':b.status}">${late?'overdue':b.status}</span>`;
+    let act='';
+    if(role==='member') act=b.status==='available'
+      ?`<button class="btn ok sm" data-act="issue" data-id="${b.bid}">Issue</button>`
+      :`<button class="btn warn sm" data-act="return" data-id="${b.bid}">Return</button>`;
+    return `<tr><td class="tag">${b.bid}</td>
+      <td class="t">${esc(b.title)}<small>${esc(b.author)}</small></td>
+      <td class="tag">${esc(b.category)}</td><td>${pill}</td>
+      <td data-tl="${b.bid}">${timeline(b)}</td><td style="text-align:right">${act}</td></tr>`;
+  }).join('');
+}
+function timeline(b){
+  if(b.status!=='issued') return '<span class="tag">—</span>';
+  if(!b.dueTime) return '<span class="tag">Issued before this session</span>';
+  const left=b.dueTime-nowSrv();
+  const txt=left>=0?`${left}s left`:`${-left}s late · Rs. ${-left*5}`;
+  return `<span class="timer ${left<0?'late':''}">${txt}</span><div class="tag">${hhmmss(b.issueTime)} → ${hhmmss(b.dueTime)}</div>`;
+}
+// live countdown without redrawing the whole table
+setInterval(()=>{
+  if($('app').classList.contains('hidden'))return;
+  document.querySelectorAll('[data-tl]').forEach(td=>{
+    const b=books.find(x=>x.bid==td.dataset.tl); if(b) td.innerHTML=timeline(b);
+  });
+  $('sLate').textContent=books.filter(isLate).length;
+  document.querySelectorAll('#rows tr').forEach(tr=>{
+    const id=tr.querySelector('.tag')?.textContent, b=books.find(x=>x.bid==id);
+    if(b){const p=tr.querySelector('.pill'); if(p&&b.status==='issued'){const l=isLate(b);p.className='pill '+(l?'overdue':'issued');p.textContent=l?'overdue':'issued'}}
+  });
+},1000);
+
+$('rows').addEventListener('click',async e=>{
+  const btn=e.target.closest('button[data-act]'); if(!btn)return;
+  btn.disabled=true;
+  const act=btn.dataset.act, id=btn.dataset.id;
+  const r=await api(`/api/${act}?bid=${id}`,'POST');
+  if(!r.ok) toast(r.message,'bad');
+  else if(act==='issue') toast(r.message,'ok');
+  else if(r.fine>0) toast(`Returned ${r.lateSeconds}s late. Fine: Rs. ${r.fine}`,'bad');
+  else toast('Returned on time. No fine.','ok');
+  load();
+});
+['q','fCat','fStatus'].forEach(i=>$(i).addEventListener('input',render));
+
+$('addForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const p=new URLSearchParams({title:$('aTitle').value,author:$('aAuthor').value,category:$('aCat').value});
+  const r=await api('/api/add?'+p,'POST');
+  toast(r.message,r.ok?'ok':'bad');
+  if(r.ok){e.target.reset();load()}
+});
+
+document.querySelectorAll('.role').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.role').forEach(x=>x.classList.remove('on'));b.classList.add('on');role=b.dataset.role;
+});
+$('loginForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=$('name').value.trim(); if(!name)return;
+  try{sessionStorage.setItem('lib',JSON.stringify({name,role}))}catch(_){}
+  enter(name);
+});
+function enter(name){
+  $('login').classList.add('hidden');$('app').classList.remove('hidden');
+  $('who').textContent=`${role==='librarian'?'Librarian':'Member'}: ${name}`;
+  $('who').classList.remove('hidden');$('logout').classList.remove('hidden');
+  $('addBox').classList.toggle('hidden',role!=='librarian');
+  load();
+}
+$('logout').onclick=()=>{try{sessionStorage.removeItem('lib')}catch(_){};location.reload()};
+setInterval(()=>{if(!$('app').classList.contains('hidden'))load()},10000); // pick up changes from other tabs
+fetch('/api/version').then(r=>r.json()).then(v=>{$('ver').textContent='version '+v.version}).catch(()=>{});
+try{const s=JSON.parse(sessionStorage.getItem('lib')||'null');if(s){role=s.role;enter(s.name)}}catch(_){}
+</script>
+</body>
+</html>
